@@ -1,16 +1,19 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { deleteBlogPost } from "../../services/Api";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import { deletePostData } from "../../services/Api";
 
-const DeletePost = () => {
-  const navigate = useNavigate({ toggleDeleteModal, setToggleDeleteModal, id });
+const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // for delete post
-  const deletePost = useMutation(deleteBlogPost, {
+  const deletePost = useMutation(deletePostData, {
     onSuccess: () => {
       toast.success("Post deleted successfully!", {
         position: "top-center",
@@ -23,6 +26,8 @@ const DeletePost = () => {
         theme: "light",
       });
       setToggleDeleteModal(false);
+
+      queryClient.invalidateQueries("getPost"); //refetch the get api *****
 
       setTimeout(() => {
         navigate("/");
@@ -44,8 +49,7 @@ const DeletePost = () => {
   });
 
   const handleDeletePost = async () => {
-    // const data = await deleteBlogPost(id);
-    deletePost.mutate(id);
+    deletePost.mutate(deleteId);
   };
 
   return (
@@ -102,7 +106,6 @@ const DeletePost = () => {
                 data-modal-hide="popup-modal"
                 type="button"
                 className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
-                // onClick={deletePost}
                 onClick={handleDeletePost}
               >
                 Yes, I am sure
@@ -119,6 +122,7 @@ const DeletePost = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

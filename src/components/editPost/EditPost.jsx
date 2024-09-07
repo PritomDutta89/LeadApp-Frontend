@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Oval } from "react-loader-spinner";
 import { useMutation } from "react-query";
 import { useQuery } from "react-query";
+import { getPostWithID, updatePost } from "../../services/Api";
 
 const EditPost = () => {
   const [name, setName] = useState("");
@@ -15,78 +16,81 @@ const EditPost = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Queries - get [for fetching the specific data] - getSingleBlogList
-  //   const { isLoading, error, data } = useQuery(
-  //     ["getSingleBlogList", id],
-  //     () => fetchSingleBlog(id),
-  //     {
-  //       onSuccess: (data) => {
-  //         setTitle(data?.data?.title ? data?.data?.title : "");
-  //         setImgUrl(data?.data?.imageURL ? data?.data?.imageURL : "");
-  //         setDescription(data?.data?.content ? data?.data?.content : "");
-  //       },
-  //     }
-  //   );
+  // Queries - get [for fetching the specific data] - getSinglePostList
+  const { isLoading, error, data } = useQuery(
+    ["getSinglePostList", id],
+    () => getPostWithID(id),
+    {
+      onSuccess: (data) => {
+        setName(data?.data?.name ? data?.data?.name : "");
+        setEmail(data?.data?.email ? data?.data?.email : "");
+        setNo(data?.data?.mobile ? data?.data?.mobile : "");
+        setProduct(data?.data?.product ? data?.data?.product : "");
+      },
+    }
+  );
 
   // for edit post
-  //   const editPost = useMutation(updateBlogPost, {
-  //     onSuccess: () => {
-  //       toast.success("Post updated successfully!", {
-  //         position: "top-center",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "light",
-  //       });
+  const editPost = useMutation(updatePost, {
+    onSuccess: () => {
+      toast.success("Post updated successfully!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
 
-  //       setTitle("");
-  //       setImgUrl("");
-  //       setDescription("");
+      setProduct("");
+      setNo("");
+      setEmail("");
+      setName("");
 
-  //       setTimeout(() => {
-  //         navigate(-1);
-  //       }, 1000);
-  //     },
-  //     onError: () => {
-  //       toast.error("Please try again.", {
-  //         position: "top-center",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "light",
-  //       });
-  //     },
-  //   });
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
+    },
+    onError: () => {
+      toast.error("Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    },
+  });
 
-  //   const handleEditPost = async (e) => {
-  //     e.preventDefault();
+  const handleEditPost = async (e) => {
+    e.preventDefault();
 
-  //     const postData = {
-  //       title: title,
-  //       content: description,
-  //       imageURL: imgUrl,
-  //     };
+    const postData = {
+      name: name,
+      email: email,
+      mobile: no,
+      product: product,
+    };
 
-  //     // editPost.mutate(id, postData); //not work - only accept 1 argument - follow below method
-  //     editPost.mutate({ id, data: postData }); // Pass a single object with id and postData
-  //   };
+    // editPost.mutate(id, postData); //not work - only accept 1 argument - follow below method
+    editPost.mutate({ id, data: postData }); // Pass a single object with id and postData
+  };
 
-  //   if (error)
-  //     return (
-  //       <div className="flex justify-center items-center h-[24rem]">
-  //         Error loading posts
-  //       </div>
-  //     );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-[24rem]">
+        Error loading posts
+      </div>
+    );
 
   return (
     <div>
-      {false ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-[24rem]">
           <Oval
             visible={true}
@@ -99,7 +103,7 @@ const EditPost = () => {
           />
         </div>
       ) : (
-        <form className="px-[2rem] mt-14 h-[20rem]">
+        <form className="px-[2rem] mt-14 h-[20rem]" onSubmit={handleEditPost}>
           <div className="grid gap-6 mb-6 md:grid-cols-2 ">
             <div>
               <label
@@ -165,10 +169,9 @@ const EditPost = () => {
                 value={product}
                 onChange={(e) => setProduct(e.target.value)}
               >
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="FR">France</option>
-                <option value="DE">Germany</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
               </select>
             </div>
           </div>

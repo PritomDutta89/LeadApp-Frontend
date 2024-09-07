@@ -1,27 +1,54 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { getPost } from "../../services/Api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Oval } from "react-loader-spinner";
+import DeletePost from "../deletePost/DeletePost";
 
 const Cards = () => {
-  const [cards, setCards] = useState([
-    {
-      name: "John Doe",
-      email: "john@gmail.com",
-      number: "1234567890",
-      product: "Product A",
-    },
-    {
-      name: "Jane Smith",
-      email: "jane@gmail.com",
-      number: "9876543210",
-      product: "Product B",
-    },
-    // Add more cards as needed
-  ]);
+  const [cards, setCards] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const navigate = useNavigate();
-
   // State for sorting criterion
   const [sortCriterion, setSortCriterion] = useState("");
+  const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
+
+  // react query
+  const { isLoading, error, data } = useQuery("getPost", getPost, {
+    onSuccess: (data) => {
+      setCards(data?.data ? data?.data : []);
+      setFilteredBlogs(data?.data ? data?.data : []);
+    },
+    onError: () => {
+      setCards([]);
+      toast.error("Please refresh the page.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const filterData = data?.data?.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredBlogs(filterData);
+    } else {
+      setFilteredBlogs(data?.data);
+    }
+  }, [data, searchQuery]);
 
   // Sorting function
   const sortCards = (criterion) => {
@@ -30,6 +57,8 @@ const Cards = () => {
       sortedCards = [...cards].sort((a, b) => a.name.localeCompare(b.name));
     } else if (criterion === "email") {
       sortedCards = [...cards].sort((a, b) => a.email.localeCompare(b.email));
+    } else {
+      sortedCards = data;
     }
     setCards(sortedCards);
   };
@@ -59,20 +88,14 @@ const Cards = () => {
             type="search"
             id="default-search"
             className="block w-full p-3 ps-10 text-xs text-gray-900 border border-gray-300 rounded-full bg-gray-50 outline-none focus:ring-[#6947BF] focus:border-[#6947BF] "
-            placeholder="Search by title..."
-            // value={searchQuery}
-            // onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
         <div className="flex items-center gap-3">
           <div>
-            {/* <label
-              htmlFor="countries"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Select an option
-            </label> */}
             <select
               id="countries"
               className="bg-gray-50 w-[7rem] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
@@ -81,7 +104,9 @@ const Cards = () => {
                 sortCards(e.target.value);
               }}
             >
-              <option selected>Sort by</option>
+              <option disabled selected value="revert">
+                Sort by
+              </option>
               <option value="name">Name</option>
               <option value="email">Email</option>
             </select>
@@ -98,9 +123,21 @@ const Cards = () => {
       </div>
 
       <div className="p-6 px-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {cards.length > 0 &&
-            cards.map((item, index) => (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[20rem]">
+            <Oval
+              visible={true}
+              height="80"
+              width="50"
+              color="#4fa94d"
+              ariaLabel="oval-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </div>
+        ) : filteredBlogs?.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredBlogs?.map((item, index) => (
               <div
                 key={index}
                 className="p-6 h-auto bg-white border border-gray-200 rounded-lg shadow "
@@ -122,21 +159,40 @@ const Cards = () => {
                   <button
                     type="button"
                     className="text-white w-[6rem]  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-                    onClick={() => navigate(`/editPost/${1}`)}
+                    onClick={() => navigate(`/editPost/${item._id}`)}
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     className="text-white w-[6rem] bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+                    onClick={() => {
+                      setDeleteId(item._id);
+                      setToggleDeleteModal(true);
+                    }}
                   >
                     Delete
                   </button>
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <p className="h-[20rem] flex justify-center items-center">
+            No post found
+          </p>
+        )}
       </div>
+
+      {toggleDeleteModal && (
+        <DeletePost
+          toggleDeleteModal={toggleDeleteModal}
+          setToggleDeleteModal={setToggleDeleteModal}
+          deleteId={deleteId}
+        />
+      )}
+
+      <ToastContainer />
     </div>
   );
 };
