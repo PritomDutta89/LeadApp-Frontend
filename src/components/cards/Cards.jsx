@@ -54,13 +54,13 @@ const Cards = () => {
   const sortCards = (criterion) => {
     let sortedCards;
     if (criterion === "name") {
-      sortedCards = [...cards].sort((a, b) => a.name.localeCompare(b.name));
+      sortedCards = [...filteredBlogs].sort((a, b) => a.name.localeCompare(b.name));
     } else if (criterion === "email") {
-      sortedCards = [...cards].sort((a, b) => a.email.localeCompare(b.email));
+      sortedCards = [...filteredBlogs].sort((a, b) => a.email.localeCompare(b.email));
     } else {
       sortedCards = data;
     }
-    setCards(sortedCards);
+    setFilteredBlogs(sortedCards);
   };
 
   return (
@@ -149,7 +149,7 @@ const Cards = () => {
                   <span className="font-semibold">Email id:</span> {item.email}
                 </p>
                 <p className="mt-1">
-                  <span className="font-semibold">Number:</span> {item.number}
+                  <span className="font-semibold">Number:</span> {item.mobile}
                 </p>
                 <p className="mt-1">
                   <span className="font-semibold">Product:</span> {item.product}

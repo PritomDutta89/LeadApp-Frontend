@@ -59,7 +59,7 @@ const CreatePost = () => {
       name: name,
       email: email,
       mobile: no,
-      product: product,
+      product: product ? product : "A",
     };
 
     createNewPost.mutate(postData);
@@ -116,7 +116,9 @@ const CreatePost = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm py-[0.8rem] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               placeholder="Mobile No"
               value={no}
-              onChange={(e) => setNo(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 10) setNo(e.target.value);
+              }}
             />
           </div>
 

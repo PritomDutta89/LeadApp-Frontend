@@ -25,6 +25,7 @@ const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
         progress: undefined,
         theme: "light",
       });
+      
       setToggleDeleteModal(false);
 
       queryClient.invalidateQueries("getPost"); //refetch the get api *****
@@ -122,7 +123,7 @@ const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer />   */}
     </div>
   );
 };
