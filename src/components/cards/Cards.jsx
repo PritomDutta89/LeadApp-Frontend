@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Oval } from "react-loader-spinner";
 import DeletePost from "../deletePost/DeletePost";
+import { useDataContext } from "../../context/DataContext";
 
 const Cards = () => {
   const [cards, setCards] = useState([]);
@@ -17,6 +18,7 @@ const Cards = () => {
   const [sortCriterion, setSortCriterion] = useState("");
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState("");
+  const { token } = useDataContext();
 
   // react query
   const { isLoading, error, data } = useQuery("getPost", getPost, {
@@ -54,9 +56,13 @@ const Cards = () => {
   const sortCards = (criterion) => {
     let sortedCards;
     if (criterion === "name") {
-      sortedCards = [...filteredBlogs].sort((a, b) => a.name.localeCompare(b.name));
+      sortedCards = [...filteredBlogs].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
     } else if (criterion === "email") {
-      sortedCards = [...filteredBlogs].sort((a, b) => a.email.localeCompare(b.email));
+      sortedCards = [...filteredBlogs].sort((a, b) =>
+        a.email.localeCompare(b.email)
+      );
     } else {
       sortedCards = data;
     }
@@ -167,8 +173,21 @@ const Cards = () => {
                     type="button"
                     className="text-white w-[6rem] bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
                     onClick={() => {
-                      setDeleteId(item._id);
-                      setToggleDeleteModal(true);
+                      token && setDeleteId(item._id);
+                      token && setToggleDeleteModal(true);
+                      if(!token)
+                      {
+                        toast.error("Please login.", {
+                          position: "top-center",
+                          autoClose: 5000,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                          theme: "light",
+                        });
+                      }
                     }}
                   >
                     Delete

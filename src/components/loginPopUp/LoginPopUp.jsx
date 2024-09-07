@@ -173,7 +173,7 @@ const LoginPopUp = ({ setShowLogin }) => {
       return;
     }
 
-    if (!recaptchaToken) {
+    if (!recaptchaToken && currState !== "Forgot") {
       toast.warn("Please complete the CAPTCHA", {
         position: "top-center",
         autoClose: 5000,

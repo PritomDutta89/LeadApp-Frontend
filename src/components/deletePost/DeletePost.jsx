@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useMutation, useQueryClient } from "react-query";
 import { deletePostData } from "../../services/Api";
+import { useDataContext } from "../../context/DataContext";
 
 const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
         progress: undefined,
         theme: "light",
       });
-      
+
       setToggleDeleteModal(false);
 
       queryClient.invalidateQueries("getPost"); //refetch the get api *****

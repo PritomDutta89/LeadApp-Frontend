@@ -9,6 +9,7 @@ import EditPost from "./components/editPost/EditPost";
 import CreatePost from "./components/createPost/CreatePost";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { DataProvider } from "./context/DataContext";
+import PrivateRoute from "./PrivateRoute";
 
 const queryClient = new QueryClient();
 
@@ -23,8 +24,14 @@ function App() {
           <Navbar setShowLogin={setShowLogin} />
           <Routes>
             <Route path="/" element={<Cards />} />
-            <Route path="/editPost/:id" element={<EditPost />} />
-            <Route path="/createPost" element={<CreatePost />} />
+            <Route
+              path="/editPost/:id"
+              element={<PrivateRoute element={EditPost} />}
+            />
+            <Route
+              path="/createPost"
+              element={<PrivateRoute element={CreatePost} />}
+            />
           </Routes>
           <Footer />
         </DataProvider>
