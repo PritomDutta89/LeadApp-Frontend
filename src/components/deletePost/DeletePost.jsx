@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useMutation, useQueryClient } from "react-query";
 import { deletePostData } from "../../services/Api";
-import { useDataContext } from "../../context/DataContext";
+// import { useDataContext } from "../../context/DataContext";
 
 const DeletePost = ({ toggleDeleteModal, setToggleDeleteModal, deleteId }) => {
   const navigate = useNavigate();

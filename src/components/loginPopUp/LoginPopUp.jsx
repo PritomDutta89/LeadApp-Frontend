@@ -4,10 +4,12 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useMutation } from "react-query";
-import { useDataContext } from "../../context/DataContext";
+// import { useDataContext } from "../../context/DataContext";
 import { loginApi, registerApi, resetPasswordApi } from "../../services/Api";
 import { validatePassword } from "../../utilities/reusableFunction";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useDispatch } from "react-redux";
+import { setToken } from "../../redux/slice/tokenSlice";
 
 const LoginPopUp = ({ setShowLogin }) => {
   const [currState, setCurrState] = useState("Login");
@@ -16,14 +18,16 @@ const LoginPopUp = ({ setShowLogin }) => {
     userName: "",
     password: "",
   });
-  const { setToken } = useDataContext();
+  // const { setToken } = useDataContext();
+  const dispatch = useDispatch();
   const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   // React query
   const logIn = useMutation(loginApi, {
     onSuccess: (data) => {
-      setToken(data?.token);
-      localStorage.setItem("tokenETL", data?.token);
+      // setToken(data?.token);
+      dispatch(setToken(data?.token))
+      // localStorage.setItem("tokenETL", data?.token);
       setShowLogin(false);
 
       data?.success
@@ -64,8 +68,9 @@ const LoginPopUp = ({ setShowLogin }) => {
 
   const signUp = useMutation(registerApi, {
     onSuccess: (data) => {
-      setToken(data?.token);
-      localStorage.setItem("tokenETL", data?.token);
+      // setToken(data?.token);
+      dispatch(setToken(data?.token))
+      // localStorage.setItem("tokenETL", data?.token);
       setShowLogin(false);
 
       data?.success
@@ -173,7 +178,7 @@ const LoginPopUp = ({ setShowLogin }) => {
       return;
     }
 
-    if (!recaptchaToken && currState !== "Forgot") {
+    if (!recaptchaToken && currState !== "Forgot" && currState !== "Signin") {
       toast.warn("Please complete the CAPTCHA", {
         position: "top-center",
         autoClose: 5000,
@@ -186,6 +191,8 @@ const LoginPopUp = ({ setShowLogin }) => {
       });
       return;
     }
+
+    console.log("currState: ", currState)
 
     if (currState === "Login") {
       logIn.mutate({ ...data, recaptchaToken });

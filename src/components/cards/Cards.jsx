@@ -7,7 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Oval } from "react-loader-spinner";
 import DeletePost from "../deletePost/DeletePost";
-import { useDataContext } from "../../context/DataContext";
+// import { useDataContext } from "../../context/DataContext";
+import { useSelector } from "react-redux";
 
 const Cards = () => {
   const [cards, setCards] = useState([]);
@@ -18,7 +19,9 @@ const Cards = () => {
   const [sortCriterion, setSortCriterion] = useState("");
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState("");
-  const { token } = useDataContext();
+  // const { token } = useDataContext();
+  const token = useSelector((state) => state.auth.token);
+
 
   // react query
   const { isLoading, error, data } = useQuery("getPost", getPost, {
@@ -100,11 +103,11 @@ const Cards = () => {
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3">
           <div>
             <select
               id="countries"
-              className="bg-gray-50 w-[7rem] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              className="bg-gray-50 w-[8rem] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
               onChange={(e) => {
                 setSortCriterion(e.target.value);
                 sortCards(e.target.value);
@@ -120,7 +123,7 @@ const Cards = () => {
 
           <button
             type="button"
-            className="text-white w-[7rem] bg-[#2F3A70] hover:bg-[#202a5f] font-medium rounded-lg text-sm px-5 py-2.5 md:me-8"
+            className="text-white w-[8rem] bg-[#2F3A70] hover:bg-[#202a5f] font-medium rounded-lg text-sm px-5 py-2.5 md:me-8"
             onClick={() => navigate("/createPost")}
           >
             Create Post

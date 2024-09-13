@@ -3,15 +3,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDataContext } from "../../context/DataContext";
+// import { useDataContext } from "../../context/DataContext";
+import { useDispatch, useSelector } from "react-redux";
+import { clearToken } from "../../redux/slice/tokenSlice";
 
 const Navbar = ({ setShowLogin }) => {
   const navigate = useNavigate();
-  const { token, setToken } = useDataContext();
+  // const { token } = useDataContext();
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
 
   const handleLogout = (e) => {
-    localStorage.removeItem("tokenETL");
-    setToken("");
+    // localStorage.removeItem("tokenETL");
+    // setToken("");
+    dispatch(clearToken())
     navigate("/");
     toast.success("Logout Successfully!", {
       position: "top-center",
